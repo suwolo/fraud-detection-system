@@ -1,0 +1,51 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: transaction-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:frauddb}
+    username: ${DB_USER:fraud}
+    password: ${DB_PASSWORD:fraud}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      auto-offset-reset: earliest
+    producer:
+      acks: all
+      properties:
+        enable.idempotence: true
+    streams:
+      application-id: transaction-service-streams
+      replication-factor: 1
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 500ms
+      connect-timeout: 1s
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
+    connection-timeout: 2s
+    socket-timeout: 5s
+
+fraud:
+  history-window-minutes: 10
+
+app:
+  kafka:
+    submitted-topic: transaction.submitted
+    scored-topic: transaction.scored
+    partitions: 3
+    send-timeout-ms: 5000
+    retry-attempts: 3
+    retry-interval-ms: 1000
+  streams:
+    window-minutes: 5
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

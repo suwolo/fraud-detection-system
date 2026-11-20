@@ -1,0 +1,38 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: fraud-service
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: fraud-service
+      auto-offset-reset: earliest
+    producer:
+      acks: all
+      properties:
+        enable.idempotence: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 500ms
+      connect-timeout: 1s
+
+app:
+  kafka:
+    submitted-topic: transaction.submitted
+    scored-topic: transaction.scored
+    partitions: 3
+    retry-attempts: 3
+    retry-interval-ms: 1000
+  velocity:
+    # redis: sliding window kept in Redis. request: count from the history sent with the request.
+    store: ${VELOCITY_STORE:redis}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
